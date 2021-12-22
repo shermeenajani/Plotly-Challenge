@@ -25,12 +25,58 @@ function BuildDropDown(Names){
 // // function to build the bar chart
 function createBarChart(BarSamples){
 
-    // Plotly.newPlot("bar", tracelist, layoutforgraph)
+    let title = `Top 10 OTUs found in Subject ID`;
+
+    let OTUIDArray = [];
+    
+    for (let i=0; i<10; i++){
+        OTUIDArray.push("OTU " + BarSamples.otu_ids[i]);
+    };
+
+    let bartrace = {
+        y: OTUIDArray,
+        x: BarSamples.sample_values.slice(0,10),
+        type: 'bar',
+        orientation: "h",
+        hovertext: BarSamples.otu_labels.slice(0,10)
+    
+    };
+
+    let barlayout ={
+    title: title
+    };
+
+    Plotly.newPlot("bar", [bartrace], barlayout);
 
 };
 
 // function to build the bubble chart
 function createBubbleChart(BubbleSamples){
+
+    let MarkerArray = [];
+    
+    for (let i=0; i<BubbleSamples.otu_ids.length; i++){
+        MarkerArray.push(Math.sqrt(BubbleSamples.sample_values[i])*5);
+    };
+
+    let bubbletrace = {
+        x: BubbleSamples.otu_ids,
+        y: BubbleSamples.sample_values,
+        mode: 'markers',
+        hovertext: BubbleSamples.otu_labels,
+        marker: {
+            colorscale: "Earth",
+            size: MarkerArray,
+            color: BubbleSamples.otu_ids
+        }
+    };
+
+    let bubblelayout ={
+        showlegend: false,
+        xaxis: {title: "OTU ID"}
+    };
+
+    Plotly.newPlot("bubble", [bubbletrace], bubblelayout);
 
 
 };
