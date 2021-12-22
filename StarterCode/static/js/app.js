@@ -1,42 +1,31 @@
-// read data file in here //
-console.log(sampledata);
-
-// Fetch the JSON data and console log it //
-
-  
-// split data file into IDs, metadata and samples //
-var Names = Object.values(sampledata.names);
-var Demographics = Object.values(sampledata.metadata);
-var Samples = Object.values(sampledata.samples);
-
-// console.log(Names);
-// console.log(Demographics);
-// console.log(Samples);
-
+// declare global ID //
 var ID = 0;
 
-// write a function to filter demographics by ID //
+
+// // write a function to filter demographics by ID //
 function selectDemographics(Demographics) {
     return Demographics.id == ID;
-};
+}
 
-// write a function to filter samples by ID //
+// // write a function to filter samples by ID //
 function selectSamples(Samples) {
     return Samples.id == ID;
-};
+}
 
-// loop to build drop down //
-var dropdown = d3.select("select");
-for (let i=0; i<Names.length; i++){
-    var TempID = dropdown.append("option").text(`ID: ${Names[i]}`);
-    TempID.attr("value",Names[i]);
+// // loop to build drop down //
+function BuildDropDown(Names){
+    var dropdown = d3.select("select");
+    for (let i=0; i<Names.length; i++){
+        var TempID = dropdown.append("option").text(`ID: ${Names[i]}`);
+        TempID.attr("value",Names[i]);
 
-};
+    };
+}
 
-// function to build the bar chart
+// // function to build the bar chart
 function createBarChart(BarSamples){
 
-    Plotly.newPlot("bar", tracelist, layoutforgraph)
+    // Plotly.newPlot("bar", tracelist, layoutforgraph)
 
 };
 
@@ -52,7 +41,7 @@ function createGuageChart(GuageDem){
 
 };
 
-// function to use D3 to populate demographics data //
+// function to use D3 to populate demographics data 
 function createDemData(NewDem) {
     // console.log(NewDem.ethnicity);
     // console.log(NewDem.wfreq);
@@ -78,11 +67,49 @@ function createDemData(NewDem) {
     TempPanel.attr("class","deleteMe");
 };
 
-
+// call function each time a new ID is selected from dropdown
 function optionChanged(option){
 
     console.log(option);
-    ID = option;
+
+    d3.json("data/samples.json").then(function(sampledata) {
+
+        Names = sampledata.names;
+        Demographics = sampledata.metadata;
+        Samples = sampledata.samples;
+
+        ID = option;
+        var FilterDemographics = Demographics.filter(selectDemographics);
+        var FilterSamples  = Samples.filter(selectSamples);
+        console.log(FilterDemographics);
+        console.log(FilterSamples);
+
+        createDemData(FilterDemographics[0]);
+        createBarChart(FilterSamples[0]);
+        createBubbleChart(FilterSamples[0]);
+        createGuageChart(FilterDemographics[0]);
+    })
+};
+
+
+// reading data and displaying first selected ID
+d3.json("data/samples.json").then(function(sampledata) {
+    console.log(sampledata);
+    
+    Names = sampledata.names;
+    Demographics = sampledata.metadata;
+    Samples = sampledata.samples;
+    
+    ID = Names[0];
+
+
+    console.log(Names);
+    console.log(Demographics);
+    console.log(Samples);
+
+
+    BuildDropDown(Names);
+
     var FilterDemographics = Demographics.filter(selectDemographics);
     var FilterSamples  = Samples.filter(selectSamples);
     console.log(FilterDemographics);
@@ -92,4 +119,5 @@ function optionChanged(option){
     createBarChart(FilterSamples[0]);
     createBubbleChart(FilterSamples[0]);
     createGuageChart(FilterDemographics[0]);
-};
+
+});
